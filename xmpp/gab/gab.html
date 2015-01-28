@@ -8,6 +8,7 @@
     <script src='js/lib/jquery-1.11.2.min.js' type='text/javascript'></script>
 	 <script src='js/lib/jquery-ui.min.js' type='text/javascript'></script>
 	 <script src='js/lib/strophe.min.js' type='text/javascript'></script>
+	 <script src='js/lib/strophe.register.js' type='text/javascript'></script>	 
 	 <script src='js/lib/strophe.flxhr.min.js' type='text/javascript'></script>
 	 <script src='js/lib/flxhr/flXHR.js' type='text/javascript'></script>
 	 <link rel='stylesheet' href='css/jquery-ui.css'>
@@ -21,7 +22,9 @@
     <div id='toolbar'>
       <span class='button' id='new-contact'>add contact...</span> ||
       <span class='button' id='new-chat'>chat with...</span> ||
-      <span class='button' id='disconnect'>disconnect</span>
+      <span class='button' id='disconnect'>disconnect</span> ||
+      <span class='button' id='register'>Register</span> ||
+      <span class='button' id='loginButton'>Login</span>
     </div>
 	 <div id="console"></div>
     <div id='chat-area'>
@@ -53,6 +56,10 @@
     <div id='approve_dialog' class='hidden'>
       <p><span id='approve-jid'></span> has requested a subscription
         to your presence.  Approve or deny?</p>
+    </div>
+    <div id="register_dialog" class="hidden">
+    	<label>Username:</label><input type='text' id='register-jid' />
+      <label>Password:</label><input type='password' id='register-password' />
     </div>
   </body>
 </html>

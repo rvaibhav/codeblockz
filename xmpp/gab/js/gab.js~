@@ -109,7 +109,10 @@ var Gab = {
         var jid_id = Gab.jid_to_id(jid);
 
         if ($('#chat-' + jid_id).length === 0) {
-            $('#chat-area').tabs('add', '#chat-' + jid_id, jid);
+//            $('#chat-area').tabs('add', '#chat-' + jid_id, jid);
+				var li = "<li><a href='#chat-'" + jid_id + ">" + jid_id+ "</a></li>";
+				$('#chat-area').tabs().find(".ui-tabs-nav").append(li);
+				$("#chat-area").tabs().append("<div id='chat-" + jid_id + "'></div>")
             $('#chat-' + jid_id).append(
                 "<div class='chat-messages'></div>" +
                 "<input type='text' class='chat-input'>");
@@ -117,7 +120,7 @@ var Gab = {
         
         $('#chat-' + jid_id).data('jid', full_jid);
 
-        $('#chat-area').tabs('select', '#chat-' + jid_id);
+//        $('#chat-area').tabs('select', '#chat-' + jid_id);
         $('#chat-' + jid_id + ' input').focus();
 
         var composing = $(message).find('composing');
@@ -223,33 +226,13 @@ var Gab = {
         } else {
             $('#roster-area ul').append(elem);
         }
-//        Gab.registerEvents();
     },
     
-    registerEvents:function(){
-    	$('.roster-contact').unbind("click");
-    	$('.roster-contact').click(function () {
-        var jid = $(this).find(".roster-jid").text();
-        var name = $(this).find(".roster-name").text();
-        var jid_id = Gab.jid_to_id(jid);
-
-        if ($('#chat-' + jid_id).length === 0) {
-            $('#chat-area').tabs('add', '#chat-' + jid_id, name);
-            $('#chat-' + jid_id).append(
-                "<div class='chat-messages'></div>" +
-                "<input type='text' class='chat-input'>");
-            $('#chat-' + jid_id).data('jid', jid);
-        }
-        $('#chat-area').tabs('select', '#chat-' + jid_id);
-
-        $('#chat-' + jid_id + ' input').focus();
-    });
-    }
 }
 
 $(document).ready(function(){
 	$('#login_dialog').dialog({
-		autoOpen: true,
+		autoOpen: false,
 		draggable: false,
 		modal: true,
 		title: 'Connect to XMPP',
@@ -258,6 +241,23 @@ $(document).ready(function(){
 				$(document).trigger('connect', {
 					jid: $('#jid').val(),
 					password: $('#password').val()
+				});
+				$('#password').val('');
+				$(this).dialog('close');
+			}
+		}
+	});
+	
+	$('#register_dialog').dialog({
+		autoOpen: false,
+		draggable: false,
+		modal: true,
+		title: 'Register to XMPP',		
+		buttons: {
+			"Register": function () {
+				$(document).trigger('register', {
+					jid: $('#register-jid').val(),
+					password: $('#register-password').val()
 				});
 				$('#password').val('');
 				$(this).dialog('close');
@@ -330,16 +330,98 @@ $(document).ready(function(){
         var jid_id = Gab.jid_to_id(jid);
 
         if ($('#chat-' + jid_id).length === 0) {
-            $('#chat-area').tabs('add', '#chat-' + jid_id, name);
+//            $('#chat-area').tabs('add', '#chat-' + jid_id, name);
+//				$("#chat-areal ul.ui-tabs-nav").append("<li><a href='#chat-'" + jid_id + ">" + jid_id+ "</a></li>");
+				var li = "<li><a href='#chat-'" + jid_id + ">" + jid_id+ "</a></li>";
+				$('#chat-area').tabs().find(".ui-tabs-nav").append(li);
+				$("#chat-area").tabs().append("<div id='chat-" + jid_id + "'></div>")
             $('#chat-' + jid_id).append(
                 "<div class='chat-messages'></div>" +
                 "<input type='text' class='chat-input'>");
             $('#chat-' + jid_id).data('jid', jid);
         }
-        $('#chat-area').tabs('select', '#chat-' + jid_id);
+//        $('#chat-area').tabs('select', '#chat-' + jid_id);
 
         $('#chat-' + jid_id + ' input').focus();
+        $("#chat-area").tabs("refresh");
     });
+    
+    $(document).on("keypress",".chat-input",function(ev){
+//    $('.chat-input').live('keypress', function (ev) {
+        var jid = $(this).parent().data('jid');
+
+        if (ev.which === 13) {
+            ev.preventDefault();
+
+            var body = $(this).val();
+
+            var message = $msg({to: jid,
+                                "type": "chat"})
+                .c('body').t(body).up()
+                .c('active', {xmlns: "http://jabber.org/protocol/chatstates"});
+            Gab.connection.send(message);
+
+            $(this).parent().find('.chat-messages').append(
+                "<div class='chat-message'>&lt;" +
+                "<span class='chat-name me'>" + 
+                Strophe.getNodeFromJid(Gab.connection.jid) +
+                "</span>&gt;<span class='chat-text'>" +
+                body +
+                "</span></div>");
+            Gab.scroll_chat(Gab.jid_to_id(jid));
+
+            $(this).val('');
+            $(this).parent().data('composing', false);
+        } else {
+            var composing = $(this).parent().data('composing');
+            if (!composing) {
+                var notify = $msg({to: jid, "type": "chat"})
+                    .c('composing', {xmlns: "http://jabber.org/protocol/chatstates"});
+                Gab.connection.send(notify);
+
+                $(this).parent().data('composing', true);
+            }
+        }
+    });
+    
+    $("#register").click(function(){
+    	$("#register_dialog").removeClass("hidden");
+    	$("#register_dialog").dialog("open");
+    });
+    $("#loginButton").click(function(){
+    	$("#login_dialog").removeClass("hidden");
+    	$("#login_dialog").dialog("open");
+    });
+});
+
+
+$(document).bind('register',function(ev,data){
+	var connection = new Strophe.Connection("http://localhost:5284/http-bind");
+
+	connection.xmlInput = function (body) {
+		Peek.show_traffic(body, 'incoming');
+	};
+	connection.xmlOutput = function (body) {
+		Peek.show_traffic(body, 'outgoing');
+	};
+	
+	var callback = function (status) {
+	    if (status === Strophe.Status.REGISTER) {
+	        connection.register.fields.username = data.jid;
+	        connection.register.fields.password = data.password;
+	        connection.register.submit();
+	    } else if (status === Strophe.Status.REGISTERED) {
+	        console.log("registered!");
+	        connection.authenticate();
+	    } else if (status === Strophe.Status.CONNECTED) {
+	        console.log("logged in!");
+	        Gab.connection = connection;
+	        $(document).trigger("connected");
+	    } else {
+	        // every other status a connection.connect would receive
+	    }
+	};
+	connection.register.connect("mydomain.tld", callback, null, null);
 });
 
 $(document).bind('connect',function(ev,data){
@@ -363,6 +445,8 @@ $(document).bind('connect',function(ev,data){
 });
 
 $(document).bind('connected',function(){
+	$("#register").addClass("hidden");
+	$("#loginButton").addClass("hidden");
 	 var iq = $iq({type: 'get'}).c('query', {xmlns: 'jabber:iq:roster'});
     Gab.connection.sendIQ(iq, Gab.on_roster);
     Gab.connection.addHandler(Gab.on_roster_changed,"jabber:iq:roster", "iq", "set");
@@ -370,7 +454,7 @@ $(document).bind('connected',function(){
 });
 
 $(document).bind('disconnected',function(){
-
+	Peek.connection.disconnect();
 });
 
 $(document).bind('contact_added',function(ev,data){

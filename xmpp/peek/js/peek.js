@@ -123,6 +123,9 @@ $(document).ready(function () {
 	});
 	
 	$("#send_button").click(function () {
+		  if(Peek.connection === null){
+				$(document).trigger("makeconnection");		  
+		  }
         var input = $('#input').val();
         var error = false;
         if (input.length > 0) {
@@ -156,18 +159,33 @@ $(document).ready(function () {
 	$('#input').keypress(function () {
 		$(this).css({backgroundColor: '#fff'});
 	});
+	
+	$("#showLogin").click(function(){
+		$('#login_dialog').dialog();
+	});
+});
+
+$(document).bind('makeconnection',function(){
+	if(Peek.connection === null){	
+		var conn = new Strophe.Connection("http://localhost:5284/http-bind");
+	
+		conn.xmlInput = function (body) {
+			Peek.show_traffic(body, 'incoming');
+		};
+		conn.xmlOutput = function (body) {
+			Peek.show_traffic(body, 'outgoing');
+		};
+		
+		Peek.connection = conn;
+	}
 });
 
 $(document).bind('connect',function(ev,data){
-	var conn = new Strophe.Connection("http://localhost:5284/http-bind");
-	
-	conn.xmlInput = function (body) {
-		Peek.show_traffic(body, 'incoming');
-	};
-	conn.xmlOutput = function (body) {
-		Peek.show_traffic(body, 'outgoing');
-	};
 
+	$(document).trigger("makeconnection");
+	
+	var conn = Peek.connection;
+	
 	conn.connect(data.jid,data.password,function(status){
 		if(status === Strophe.Status.CONNECTED){
 			$(document).trigger("connected");
@@ -175,7 +193,6 @@ $(document).bind('connect',function(ev,data){
 			$(document).trigger("disconnected");
 		}
 	});
-	Peek.connection = conn;
 });
 
 $(document).bind('connected',function(){

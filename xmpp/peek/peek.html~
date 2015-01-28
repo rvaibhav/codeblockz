@@ -14,13 +14,13 @@
 </head>
 <body>
 	<h1>Peek</h1>
+	<a href="javascript:;" id="showLogin">Login</a>
 	<div id="console"></div>
-	<textarea id="input" class="disabled" disabled="disabled"></textarea>
+	<textarea id="input" class="" name="stanzaInput"></textarea>
 	<div id="buttonbar">
-	<input id="send_button" type="submit" value="Send Data"
-	disabled="disabled" class="button">
+	<input id="send_button" type="submit" value="Send Data" class="button" />
 	<input id="disconnect_button" type="submit" value="Disconnect"
-	disabled="disabled" class="button">
+	disabled="disabled" class="button" />
 	</div>
 	<!-- login dialog -->
 	<div id="login_dialog" class="hidden">
