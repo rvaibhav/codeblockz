@@ -6,7 +6,7 @@ var Hello = {
 	},
 	send_ping:function(to){
 		var ping = $iq({
-			to,to,
+			to:to,
 			type:"get",
 			id:"ping1"}).c("ping",{xmlns:"urn:xmpp:ping"});
 			Hello.log("Sending ping to " + to + ".");
