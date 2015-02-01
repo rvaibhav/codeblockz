@@ -392,6 +392,13 @@ $(document).ready(function(){
     	$("#login_dialog").removeClass("hidden");
     	$("#login_dialog").dialog("open");
     });
+    
+    $("#clearConsole").click(function(){
+    	$("#console").empty();
+    });
+    $('#disconnect').click(function () {
+		Gab.connection.disconnect();
+	 });
 });
 
 
@@ -454,7 +461,15 @@ $(document).bind('connected',function(){
 });
 
 $(document).bind('disconnected',function(){
-	Peek.connection.disconnect();
+	 Peek.connection.disconnect();
+	 Gab.connection = null;
+    Gab.pending_subscriber = null;
+
+    $('#roster-area ul').empty();
+    $('#chat-area ul').empty();
+    $('#chat-area div').remove();
+
+    $('#login_dialog').dialog('open');
 });
 
 $(document).bind('contact_added',function(ev,data){

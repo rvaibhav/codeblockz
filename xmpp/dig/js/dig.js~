@@ -1,0 +1,38 @@
+var Dig = {
+	connection: null;
+}
+
+$(document).ready(function() {
+	$('# login_dialog').dialog({
+		autoOpen: true,
+		draggable: false,
+		modal: true,
+		title: 'Connect to XMPP',
+		buttons: {"
+			Connect": function() {
+				$(document).trigger('connect', {
+					jid: $('# jid').val(),
+					password: $('# password').val()
+				});
+				$('# password').val('');
+				$(this).dialog('close');
+			}
+		}
+	});
+});
+
+$(document).bind('connect', function (ev, data) {
+	var conn = new Strophe.Connection("http://localhost:5284/http-bind");
+	conn.connect(data.jid,data.password,function(status){
+		if (status === Strophe.Status.CONNECTED) {
+			$(document).trigger('connected');
+		} else if (status === Strophe.Status.DISCONNECTED) {
+			$(document).trigger('disconnected');
+		}
+	});
+	Dig.connection = conn;
+});
+
+$(document).bind('connected', function () {
+// nothing here yet
+});
