@@ -1,0 +1,6 @@
+To run floow the following steps
+1. rpcgen dictionary.x
+2. gcc -o client client.c dictionary_clnt.c dictionary_xdr.c -lnsl
+3. gcc -o server server.c dictionary_svc.c dictionary_xdr.c -lrpcsvc -lnsl
+4. sudo ./server
+5. sudo ./client localhost
