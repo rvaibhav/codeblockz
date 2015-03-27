@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+    <title>Groupie - Chapter 8</title>
+
+    <script src='js/lib/jquery-1.11.2.min.js' type='text/javascript'></script>
+	 <script src='js/lib/jquery-ui.min.js' type='text/javascript'></script>
+	 <script src='js/lib/strophe.min.js' type='text/javascript'></script>
+	 <script src='js/lib/strophe.register.js' type='text/javascript'></script>	 
+	 <script src='js/lib/strophe.flxhr.min.js' type='text/javascript'></script>
+	 <script src='js/lib/flxhr/flXHR.js' type='text/javascript'></script>
+	 <script src='js/groupie.js' type='text/javascript'></script>
+	 <script src='js/peek.js' type='text/javascript'></script>
+	 <link rel='stylesheet' href='css/jquery-ui.css'>
+	 <link rel='stylesheet' href='css/groupie.css'>
+  </head>
+  <body>
+    <h1>Groupie</h1>
+   <a href="javascript:;" id="login">Login</a>
+	<div id="console"></div>
+    <div id='toolbar'>
+      <input id='leave' type='button' value='Leave Room'
+             disabled='disabled'>
+    </div>
+
+    <div>
+      <div id='chat-area'>
+        <div>
+          <div id='room-name'></div>
+          <div id='room-topic'></div>
+        </div>
+        <div id='chat'>
+        </div>
+
+        <textarea id='input'></textarea>
+      </div>
+    
+      <div id='participants'>
+        <ul id='participant-list'>
+        </ul>
+      </div>
+    </div>
+
+    <!-- login dialog -->
+    <div id='login_dialog' class='hidden'>
+      <p><label>JID:</label><input type='text' id='jid'></p>
+      <p><label>Password:</label><input type='password' id='password'></p>
+      <p><label>Chat Room:</label><input type='text' id='room'></p>
+      <p><label>Nickname:</label><input type='text' id='nickname'></p>
+    </div>
+  </body>
+</html>
